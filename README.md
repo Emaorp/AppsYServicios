@@ -69,16 +69,17 @@ documento HTML, CSS, JavaScript, imágenes, fuentes u otros.
 ## Resultados
 
 Complete la tabla:
+| Recurso | Tipo | Dominio | Tamaño |
+|---|---|---|---|
+| `formatos-institucionales/` | Documento HTML | itm.edu.co | 0.3 kB |
+| `tr/` (Pixel Facebook) | Fetch/XHR (tracking) | facebook.com | 0.3 kB |
+| `fa-brands-400.woff2` | Fuente | use.fontawesome.com | 119 kB |
+| `aspirante-300x300.png` | Imagen | itm.edu.co | 33.9 kB |
+| `wp-emoji-release.min.js` | JavaScript | itm.edu.co | 22.75 kB |
 
-  Recurso   Tipo   Dominio     Tamaño
-  --------- ------ --------- --------
+**Total de solicitudes observadas:** `126`
                              
                              
-                             
-                             
-                             
-
-**Total de solicitudes observadas:** `_____`
 
 ## Evidencia
 
@@ -90,15 +91,16 @@ evidencias/network.png
 
 Inclúyala aquí:
 
-``` markdown
+
 ![Recursos cargados por la aplicación](evidencias/network.png)
-```
+
 
 ### Análisis
 
 **¿Por qué una sola URL puede generar múltiples solicitudes HTTP?**
 
-> Escriba aquí su respuesta.
+> Porque cuando el navegador carga la pagina no solo pide el HTML, tambien trae todo lo que necesita la pagina para verse bien. Imagenes, estilos, fuentes... cada cosa es un archivo distinto y se pide por separado. 
+
 
 ------------------------------------------------------------------------
 
@@ -109,14 +111,14 @@ navegador, preferiblemente la correspondiente al documento principal.
 
 Identifique la información solicitada a continuación.
 
-  Elemento              Resultado
-  --------------------- -----------
-  URL                   
-  Método HTTP           
-  Código de estado      
-  Host / dominio        
-  Tipo de recurso       
-  Tiempo de respuesta   
+| Elemento | Resultado |
+|---|---|
+| URL | https://www.facebook.com/tr/ |
+| Método HTTP | POST |
+| Código de estado | 200 |
+| Host / dominio | facebook.com |
+| Tipo de recurso | document (tracking - Facebook Pixel) |
+| Tiempo de respuesta | 130 ms |
 
 ## Flujo que se está observando
 
@@ -138,20 +140,19 @@ evidencias/request.png
 
 Inclúyala en el informe:
 
-``` markdown
 ![Análisis de la solicitud HTTP](evidencias/request.png)
-```
+
 
 ### Análisis
 
 **¿Qué recurso solicitó el navegador?**
 
-> Escriba aquí su respuesta.
+> Se solicitó el endpoint /tr/ de Facebook, Facebook Pixel, que registra la visita del usuario con fines de analisis y  publicidad.
 
 **¿Qué información permite determinar si la solicitud fue atendida
 correctamente?**
 
-> Escriba aquí su respuesta.
+> El código de estado 200 OK confirma que se proceso correctamente. 
 
 ------------------------------------------------------------------------
 
@@ -176,13 +177,13 @@ Utilizando **Elementos / Elements**:
 
 ## Resultados
 
-**Elemento seleccionado:** `____________________________`
+**Elemento seleccionado:** `Título del formato "Manual ITM"`
 
-**Etiqueta HTML:** `____________________________`
+**Etiqueta HTML:** `<h3>`
 
-**Contenido original:** `____________________________`
+**Contenido original:** `Manual ITM`
 
-**Modificación realizada:** `____________________________`
+**Modificación realizada:** `Se reemplazó el texto por "hola soy una prueba"`
 
 El proceso observado puede representarse conceptualmente así:
 
@@ -204,16 +205,16 @@ evidencias/dom.png
 
 Inclúyala aquí:
 
-``` markdown
+
 ![Inspección y modificación del DOM](evidencias/dom.png)
-```
+
 
 ### Análisis
 
 **¿La modificación realizada sobre el DOM alteró permanentemente la
 aplicación o los archivos almacenados en el servidor? Justifique.**
 
-> Escriba aquí su respuesta.
+>No, la modificación fue únicamente local y temporal. Las herramientas permiten editar el DOM directamente en el navegador, pero estos cambios existen solo en la memoria de esa sesión; no se envían ni se guardan en el servidor.
 
 ------------------------------------------------------------------------
 
@@ -234,14 +235,14 @@ Observe si aparece una nueva solicitud en Network.
 
 ## Resultados
 
-  Elemento                       Resultado
-  ------------------------------ -----------
-  Acción realizada               
-  ¿Generó una nueva solicitud?   
-  URL solicitada                 
-  Método HTTP                    
-  Código de estado               
-  Tipo de respuesta              
+| Elemento | Resultado |
+|---|---|
+| Acción realizada | Clic en el botón "Descargar" del formato "Membretes" |
+| ¿Generó una nueva solicitud? | Sí |
+| URL solicitada | https://www.facebook.com/tr/ y solicitud `collect` a Google Analytics |
+| Método HTTP | POST (Facebook) / GET (Google Analytics) |
+| Código de estado | 200 (Facebook) / 204 (Google Analytics) |
+| Tipo de respuesta | document / fetch (tracking) |
 
 ## Ciclo de interacción
 
@@ -268,16 +269,16 @@ evidencias/interaccion.png
 
 Inclúyala aquí:
 
-``` markdown
+
 ![Interacción observada en Network](evidencias/interaccion.png)
-```
+
 
 ### Análisis
 
 **Explique la relación entre la acción realizada por el usuario y la
 solicitud observada.**
 
-> Escriba aquí su respuesta.
+> Cuando le di clic al botón "Descargar", pasaron dos cosas al mismo tiempo: se descargó el archivo, y por detrás la página le avisó a Google Analytics y a Facebook que hice ese clic (para registrar la interacción). O sea, una sola acción mía terminó generando varias solicitudes: una para lo que yo veía (la descarga) y otras que ni se notan, pero sirven para que el sitio lleve el control de lo que los usuarios hacen.
 
 ------------------------------------------------------------------------
 
@@ -296,9 +297,16 @@ El diagrama deberá incluir, cuando corresponda:
 
 Reemplace el siguiente bloque con su diagrama:
 
-``` mermaid
+```mermaid
 flowchart LR
-    A[Construya aquí] --> B[su flujo observado]
+    U[Usuario] -->|escribe URL| N[Navegador]
+    N -->|Solicitud HTTP| S[Servidor itm.edu.co]
+    S -->|Responde HTML, CSS, JS, imágenes| N
+    N -->|Construye| D[DOM]
+    D --> I[Interfaz visible]
+    U -->|Clic en Descargar| J[JavaScript]
+    J -->|Solicitud de tracking| F[Servidor Facebook / Google Analytics]
+    F -->|Respuesta 200/204| J
 ```
 
 ------------------------------------------------------------------------
@@ -312,15 +320,15 @@ Clasifique sus hallazgos:
 
 ## Elementos observados directamente
 
--   
--   
--   
+- La página cargó 126 solicitudes en total: HTML, CSS, JS, imágenes y fuentes
+- Algunas solicitudes vinieron de fuera del sitio, como Facebook (tr/) y Font Awesome, con respuesta 200 OK
+- Al hacer clic en "Descargar" se dispararon solicitudes extra de tracking (Facebook y Google Analytics)
 
 ## Elementos inferidos
 
--   
--   
--   
+- El sitio probablemente usa WordPress, porque varios recursos salen de carpetas de ese sistema (wp-content, wp-includes)
+- Es probable que el ITM use esos datos de tracking para ver qué formatos descarga más la gente.
+- El pixel de Facebook puede usarse para hacer publicidad dirigida, aunque tampoco se puede comprobar eso desde el navegador
 
 > No presente como observado un proceso interno que las herramientas del
 > navegador no permitan comprobar directamente.
@@ -331,9 +339,9 @@ Clasifique sus hallazgos:
 
 Redacte **tres conclusiones técnicas** derivadas de la práctica.
 
-1.  
-2.  
-3.  
+1. Una página web no es un solo archivo, son muchas piezas juntas. Aunque yo solo escribí una URL, el navegador terminó pidiendo 126 cosas distintas (imágenes, estilos, scripts), y algunas ni siquiera venían del sitio del ITM sino de otras páginas como Facebook.
+2. Lo que veo en pantalla no es lo mismo que lo que está guardado en el servidor. Cuando cambié el texto desde las herramientas del navegador, se veía distinto en mi pantalla, pero eso no cambió nada de verdad; si recargo la página, vuelve a como estaba.
+3. Cuando uno hace clic en algo, pasan más cosas de las que uno ve. Al darle a "Descargar", no solo se descargó el archivo, sino que por detrás la página le avisó a Facebook y a Google que hice clic ahí, sin que yo lo notara a simple vista.
 
 Las conclusiones deben explicar lo aprendido a partir de la evidencia y
 no limitarse a describir las actividades realizadas.
