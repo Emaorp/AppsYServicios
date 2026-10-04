@@ -1,165 +1,97 @@
-# Clase 4 — Datos e interacción entre aplicaciones
+# Clase 7 - ORM con FastAPI y PostgreSQL
 
-## Propósito
+## Tema
 
-En esta práctica van a leer un dataset CSV de estudiantes, transformarlo a una estructura propia y generar un archivo JSON.
+En esta clase conectamos una API de FastAPI con PostgreSQL usando un ORM.
 
-El flujo completo es:
+## ¿Qué es un ORM?
 
-```text
-estudiantes.csv → estructuras de Python → transformación → estudiantes_resumen.json
-```
+ORM significa **Object Relational Mapping**. Permite trabajar con una base de datos usando clases y objetos de Python.
 
-Al finalizar, podrán identificar cómo una aplicación recibe datos externos, los interpreta, selecciona la información necesaria y produce una representación que otra aplicación podría consumir.
+- Una clase representa una tabla.
+- Un atributo representa una columna.
+- Un objeto representa un registro.
+- SQLAlchemy es el ORM utilizado en este proyecto.
 
 ## Estructura del proyecto
 
 ```text
-clase-03-datos/
-├── datos/
-│   └── estudiantes.csv
-├── salida/
-│   └── estudiantes_resumen.json
-├── transformar_estudiantes.py
-└── README.md
+main.py              Inicio de FastAPI
+database.py          Conexión y sesiones de PostgreSQL
+models/              Modelos ORM que representan tablas
+schemas/             Validación de datos con Pydantic
+crud/                Operaciones de base de datos
+api/                 Rutas o endpoints
+requirements.txt     Dependencias
+.env.example         Ejemplo de variables de entorno
 ```
 
-Cree las carpetas `datos/` y `salida/` si aún no existen. Ubique el archivo `estudiantes.csv` dentro de `datos/`.
+## Función de cada carpeta
 
-## Requisitos
+- `models/`: contiene las clases de SQLAlchemy.
+- `schemas/`: valida los datos recibidos y enviados por la API.
+- `crud/`: contiene las operaciones de crear, consultar, actualizar y eliminar.
+- `api/`: contiene las rutas que puede consumir el usuario.
+- `database.py`: configura la conexión y las sesiones de la base de datos.
 
-- Python 3 instalado.
-- Editor de código, preferiblemente Visual Studio Code.
-- Git configurado con tu cuenta de GitHub.
+## Configuración
 
-Esta práctica utiliza únicamente módulos de la biblioteca estándar de Python:
-
-- `csv`: permite leer archivos CSV.
-- `json`: permite serializar y deserializar datos JSON.
-- `pathlib`: permite construir rutas de archivos de forma segura.
-
-No es necesario instalar paquetes con `pip`.
-
-## Paso 1 — Verificar Python
-
-Crea el archivo `transformar_estudiantes.py` en la carpeta raíz del proyecto y agrega:
-
-```python
-print("Hola, Aplicaciones y Servicios Web")
-```
-
-## Paso 2 — Leer el CSV
-
-
-## Paso 3 — Transformar un estudiante
-
-
-Hacer estos cambios:
-
-| Dato de entrada | Dato de salida |
-|---|---|
-| `codigo` | `id` |
-| `nombre` + `apellido` | `nombre_completo` |
-| `semestre` como texto | `semestre` como entero |
-| `promedio` como texto | `promedio` como decimal |
-| `activo` con `true` o `false` | `estado` con `Activo` o `Inactivo` |
-| `correo` | No se incluye en la salida |
-
-## Paso 4 — Crear una función de transformación
-
-Reemplaza el bloque de transformación del paso anterior por una función:
-
-
-## Paso 5 — Transformar todos los registros y guardarlos en una lista
-
-
-## Paso 6 — Serializar y guardar el JSON
-
-Agrega el import al inicio del archivo:
-
-```python
-import json
-```
-
-Luego agrega la función de serialización:
-
-```python
-def serializar_estudiantes(ruta: Path, estudiantes: list[dict]) -> None:
-    """Serializa una lista de diccionarios Python a un archivo JSON UTF-8."""
-    ruta.parent.mkdir(exist_ok=True)
-
-    with open(ruta, "w", encoding="utf-8") as archivo:
-        json.dump(estudiantes, archivo, indent=2, ensure_ascii=False)
-```
-
-Al final del archivo, define la ruta de salida y llama la función:
-
-```python
-RUTA_JSON = BASE_DIR / "salida" / "estudiantes_resumen.json"
-
-serializar_estudiantes(RUTA_JSON, estudiantes_transformados)
-print(f"Archivo JSON generado: {RUTA_JSON}")
-```
-
-Abre el archivo `salida/estudiantes_resumen.json` y comprueba que:
-
-- Contiene un arreglo JSON válido.
-- Los nombres con tildes se visualizan correctamente.
-- Los valores de `semestre` y `promedio` no tienen comillas.
-- El campo `correo` no aparece.
-
-## Paso 7 — Deserializar el JSON generado
-
-Agrega esta función:
-
-```python
-def deserializar_estudiantes(ruta: Path) -> list[dict]:
-    """Deserializa un archivo JSON a una lista de diccionarios Python."""
-    with open(ruta, encoding="utf-8") as archivo:
-        return json.load(archivo)
-```
-
-Y úsala al final:
-
-```python
-estudiantes_recuperados = deserializar_estudiantes(RUTA_JSON)
-
-print("\nDatos recuperados desde el JSON:")
-print(estudiantes_recuperados[0])
-print(f"Total recuperado: {len(estudiantes_recuperados)}")
-```
-
-## Flujo final esperado
-
-Tu programa debe completar este recorrido:
-
-```text
-1. Leer estudiantes.csv con csv.DictReader.
-2. Convertir cada fila del CSV a un diccionario Python.
-3. Transformar los registros al formato del panel académico.
-4. Serializar la lista transformada en estudiantes_resumen.json.
-5. Deserializar el JSON generado.
-6. Mostrar el primer estudiante recuperado y el total de registros.
-```
-
-## Entregables
-
-Para completar la práctica debes incluir:
-
-- `datos/estudiantes.csv`.
-- `transformar_estudiantes.py` funcionando.
-- `salida/estudiantes_resumen.json` generado por tu programa.
-- Un Pull Request hacia la rama `main`.
-
-## Entrega en GitHub
-
-Cuando el programa funcione, ejecuta:
+Crear el archivo local de variables de entorno:
 
 ```bash
-git status
-git checkout -b clase-4
-git add datos .
-git commit -m "feat: transforma estudiantes CSV a JSON"
-git push -u origin clase-4
+cp .env.example .env
 ```
 
+Completar `.env` con los datos reales de PostgreSQL. Este archivo no debe subirse a Git.
+
+Instalar dependencias y ejecutar la API:
+
+```bash
+pip install -r requirements.txt
+uvicorn main:app --reload
+```
+
+La documentación está disponible en:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+## Endpoints de estudiantes
+
+| Método | Ruta | Función |
+|---|---|---|
+| GET | `/estudiantes` | Listar estudiantes |
+| GET | `/estudiantes/{id}` | Consultar un estudiante |
+| POST | `/estudiantes` | Crear un estudiante |
+| PUT | `/estudiantes/{id}` | Reemplazar un estudiante |
+| PATCH | `/estudiantes/{id}` | Actualizar parcialmente |
+| DELETE | `/estudiantes/{id}` | Eliminar un estudiante |
+| GET | `/health/db` | Verificar la conexión |
+
+## Tarea: implementar mediciones
+
+La base de datos ya contiene la tabla `public.mediciones`. No se debe crear otra tabla ni cambiar su estructura.
+
+### Estructura de la tabla
+
+| Columna | Tipo | Obligatoria | Descripción |
+|---|---|---|---|
+| `id` | integer | Sí | Identificador principal |
+| `estudiante_id` | integer | Sí | Estudiante relacionado |
+| `variable` | varchar(50) | Sí | Nombre de la medición |
+| `valor` | numeric | Sí | Valor registrado |
+| `unidad` | varchar(20) | Sí | Unidad del valor |
+| `fecha_hora` | timestamp with time zone | Sí | Fecha y hora de la medición |
+
+`estudiante_id` es una llave foránea que apunta a `estudiantes.id`. Para crear una medición se debe utilizar un estudiante existente.
+
+### Orden de implementación
+
+1. **Pydantic:** crear los schemas de entrada, actualización y respuesta.
+2. **ORM:** crear en `models/` la clase que represente `mediciones` y su relación con `estudiantes`.
+3. **CRUD:** crear en `crud/` las funciones para listar, consultar, crear, actualizar y eliminar.
+4. **API:** crear en `api/` los endpoints que utilicen las funciones CRUD.
+5. **Pruebas:** probar todas las operaciones desde Swagger en `/docs`.
+
+La API debe permitir listar, consultar, crear, actualizar y eliminar mediciones.
