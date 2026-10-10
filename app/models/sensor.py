@@ -1,0 +1,25 @@
+from datetime import datetime
+
+from sqlalchemy import Boolean, DateTime, Integer, String, func
+from sqlalchemy.orm import Mapped, mapped_column, relationship
+
+from app.database.connection import Base
+
+
+class Sensor(Base):
+    """Tabla sensores (catálogo suministrado por el docente, solo lectura)."""
+
+    __tablename__ = "sensores"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True)
+    codigo: Mapped[str] = mapped_column(String(20), unique=True, nullable=False)
+    nombre: Mapped[str] = mapped_column(String(100), nullable=False)
+    categoria: Mapped[str] = mapped_column(String(30), nullable=False)
+    ubicacion: Mapped[str] = mapped_column(String(100), nullable=False)
+    activo: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    fecha_registro: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=func.now()
+    )
+
+    # 1 sensor -> N magnitudes
+    magnitudes: Mapped[list["SensorMagnitud"]] = relationship(back_populates="sensor")
