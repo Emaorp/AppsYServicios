@@ -1,0 +1,60 @@
+PRUEBAS DE VALIDACIÓN DE MENSAJES MQTT
+Fecha de ejecución: 2026-10-10T17:37:18
+Sensor usado como referencia: AQ-001 (magnitud co2, unidad ppm)
+Modo: simulación (dry_run). Ninguna de estas pruebas escribe en la base de datos.
+Lógica: app/mqtt/procesador.py -> procesar_mensaje()
+==============================================================================
+
+Control: mensaje válido (solo simulación, no se guarda)
+  Entrada  : {"sensor_id": "AQ-001", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"co2": {"value": 2650.0, "unit": "ppm"}}}
+  Esperado : debe ser aceptado
+  Obtenido : ACEPTADO -> Válido (simulación, no se guardó): 1 magnitud(es)
+  Resultado: OK
+
+3. Sensor inexistente
+  Entrada  : {"sensor_id": "SENSOR-INEXISTENTE", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"co2": {"value": 2650.0, "unit": "ppm"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> Sensor inexistente: 'SENSOR-INEXISTENTE'
+  Resultado: OK
+
+4. Unidad incorrecta
+  Entrada  : {"sensor_id": "AQ-001", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"co2": {"value": 2650.0, "unit": "UNIDAD-FALSA"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> Unidad incorrecta en 'co2': recibida 'UNIDAD-FALSA', esperada 'ppm'
+  Resultado: OK
+
+5. Tipo de dato incorrecto (valor como texto)
+  Entrada  : {"sensor_id": "AQ-001", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"co2": {"value": "veinticuatro", "unit": "ppm"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> Estructura inválida: measurements.co2.value.int: Input should be a valid integer; measurements.co2.value.float: Input should be a valid number
+  Resultado: OK
+
+6. Magnitud incorrecta
+  Entrada  : {"sensor_id": "AQ-001", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"magnitud_inexistente": {"value": 1, "unit": "ppm"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> Magnitud 'magnitud_inexistente' no pertenece al sensor 'AQ-001'
+  Resultado: OK
+
+7. Timestamp inválido
+  Entrada  : {"sensor_id": "AQ-001", "timestamp": "ayer por la tarde", "measurements": {"co2": {"value": 2650.0, "unit": "ppm"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> Estructura inválida: timestamp: Input should be a valid datetime or date, invalid character in year
+  Resultado: OK
+
+Extra: valor fuera de rango
+  Entrada  : {"sensor_id": "AQ-001", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"co2": {"value": 6000.0, "unit": "ppm"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> Valor fuera de rango en 'co2': 6000.0 no está entre 300.0000 y 5000.0000
+  Resultado: OK
+
+Extra: JSON dañado
+  Entrada  : {esto no es json
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> JSON inválido (Expecting property name enclosed in double quotes: line 1 column 2 (char 1))
+  Resultado: OK
+
+Extra: sensor distinto al del tópico asignado
+  Entrada  : {"sensor_id": "OTRO-SENSOR", "timestamp": "2026-10-10T22:37:18Z", "measurements": {"co2": {"value": 2650.0, "unit": "ppm"}}}
+  Esperado : debe ser rechazado
+  Obtenido : RECHAZADO -> sensor_id 'OTRO-SENSOR' no corresponde al sensor del tópico 'AQ-001'
+  Resultado: OK

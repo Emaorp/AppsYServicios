@@ -1,0 +1,5 @@
+2026-10-10 17:34:11,905 | INFO | Iniciando consumidor MQTT -> emqx.coriotlab.co:1883 (tópico iot/sensors/TEST-001/data)
+2026-10-10 17:34:12,203 | INFO | Conectado al broker emqx.coriotlab.co:1883
+2026-10-10 17:34:12,204 | INFO | Suscrito al tópico: iot/sensors/TEST-001/data
+2026-10-10 18:00:43,016 | WARNING | Desconectado del broker (Normal disconnection). Se reintentará automáticamente.
+2026-10-10 18:00:43,016 | INFO | Consumidor MQTT detenido

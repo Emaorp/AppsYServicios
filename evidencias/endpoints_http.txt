@@ -1,0 +1,429 @@
+PRUEBAS DE ENDPOINTS HTTP
+Fecha de ejecución: 2026-10-10T17:37:56
+API: http://127.0.0.1:8000 | sensor id=1 | magnitud de prueba: co2
+==============================================================================
+
+1. Listar sensores
+  Solicitud: GET /sensores
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 1,
+        "codigo": "AQ-001",
+        "nombre": "Calidad de aire interior",
+        "categoria": "AIRE",
+        "ubicacion": "Biblioteca - sala de lectura",
+        "activo": true,
+        "fecha_registro": "2026-10-07 11:42:11 (UTC-05:00)"
+      },
+      {
+        "id": 2,
+        "codigo": "AQ-002",
+        "nombre": "Material particulado",
+        "categoria": "AIRE",
+        "ubicacion": "Acceso principal - exterior",
+        "activo": true,
+        "fecha_registro": "2026-10-07 11:42:11 (UTC-05:00)"
+      },
+      {
+        "id": 3,
+        "codigo": "AQ-003",
+        "nombre": "Calidad de aire multigas",
+        "categoria": "AIRE",
+        "ubicacion": "Edificio A - aula 204",
+        "activo": true,
+        "fecha_registro": "2026-10-07 11:42:11 (UTC-05:00)"
+      },
+      {
+        "id": 4,
+        "codigo": "GAS-001",
+        "nombre": "Sensor de monóxido de carbono",
+        "categoria": "GAS",
+        "ubicacion": "Estacionamiento cubierto",
+        "activo": true,
+        "fecha_registr
+      ... (recortado)
+
+2. Sensor por id
+  Solicitud: GET /sensores/1
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    {
+      "id": 1,
+      "codigo": "AQ-001",
+      "nombre": "Calidad de aire interior",
+      "categoria": "AIRE",
+      "ubicacion": "Biblioteca - sala de lectura",
+      "activo": true,
+      "fecha_registro": "2026-10-07 11:42:11 (UTC-05:00)"
+    }
+
+3. Sensor por código
+  Solicitud: GET /sensores/por-codigo/AQ-001
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    {
+      "id": 1,
+      "codigo": "AQ-001",
+      "nombre": "Calidad de aire interior",
+      "categoria": "AIRE",
+      "ubicacion": "Biblioteca - sala de lectura",
+      "activo": true,
+      "fecha_registro": "2026-10-07 11:42:11 (UTC-05:00)"
+    }
+
+4. Magnitudes del sensor
+  Solicitud: GET /sensores/1/magnitudes
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 1,
+        "sensor_id": 1,
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor_minimo": 300.0,
+        "valor_maximo": 5000.0
+      },
+      {
+        "id": 2,
+        "sensor_id": 1,
+        "magnitud": "humidity",
+        "unidad": "%",
+        "valor_minimo": 0.0,
+        "valor_maximo": 100.0
+      },
+      {
+        "id": 3,
+        "sensor_id": 1,
+        "magnitud": "temperature",
+        "unidad": "C",
+        "valor_minimo": 10.0,
+        "valor_maximo": 45.0
+      }
+    ]
+
+5. Relación sensor-magnitud por id
+  Solicitud: GET /sensor-magnitudes/1
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    {
+      "id": 1,
+      "sensor_id": 1,
+      "magnitud": "co2",
+      "unidad": "ppm",
+      "valor_minimo": 300.0,
+      "valor_maximo": 5000.0
+    }
+
+8. Consulta por ID existente
+  Solicitud: GET /mediciones/118416
+  Esperado : 200 (si hay mediciones)
+  Obtenido : HTTP 200
+  Respuesta:
+    {
+      "id": 118416,
+      "sensor_magnitud_id": 1,
+      "sensor_codigo": "AQ-001",
+      "magnitud": "co2",
+      "unidad": "ppm",
+      "valor": 730.88,
+      "timestamp_local": "2026-10-10 17:37:46 (UTC-05:00)",
+      "fecha_recepcion_local": "2026-10-10 17:37:46 (UTC-05:00)"
+    }
+
+9. Consulta por ID inexistente
+  Solicitud: GET /mediciones/999999999
+  Esperado : 404
+  Obtenido : HTTP 404
+  Respuesta:
+    {
+      "detail": "No existe la medición con id 999999999"
+    }
+
+10. Consulta histórica
+  Solicitud: GET /sensores/1/mediciones
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 118422,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1334.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118421,
+        "sensor_magnitud_id": 2,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "humidity",
+        "unidad": "%",
+        "valor": 53.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118420,
+        "sensor_magnitud_id": 3,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "temperature",
+        "unidad": "C",
+        "valor": 27.96,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118416,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo":
+      ... (recortado)
+
+11. Consulta por rango de fechas
+  Solicitud: GET /sensores/1/mediciones?desde=2026-01-01T00:00:00&hasta=2030-01-01T00:00:00
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 118422,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1334.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118421,
+        "sensor_magnitud_id": 2,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "humidity",
+        "unidad": "%",
+        "valor": 53.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118420,
+        "sensor_magnitud_id": 3,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "temperature",
+        "unidad": "C",
+        "valor": 27.96,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118416,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo":
+      ... (recortado)
+
+12. Rango con desde > hasta
+  Solicitud: GET /sensores/1/mediciones?desde=2030-01-01T00:00:00&hasta=2026-01-01T00:00:00
+  Esperado : 400
+  Obtenido : HTTP 400
+  Respuesta:
+    {
+      "detail": "Rango inválido: 'desde' no puede ser mayor que 'hasta'"
+    }
+
+13. Validación HTTP incorrecta (limit=0)
+  Solicitud: GET /sensores/1/mediciones?limit=0
+  Esperado : 422
+  Obtenido : HTTP 422
+  Respuesta:
+    {
+      "detail": [
+        {
+          "type": "greater_than_equal",
+          "loc": [
+            "query",
+            "limit"
+          ],
+          "msg": "Input should be greater than or equal to 1",
+          "input": "0",
+          "ctx": {
+            "ge": 1
+          }
+        }
+      ]
+    }
+
+13b. Validación HTTP incorrecta (id no numérico)
+  Solicitud: GET /sensores/abc
+  Esperado : 422
+  Obtenido : HTTP 422
+  Respuesta:
+    {
+      "detail": [
+        {
+          "type": "int_parsing",
+          "loc": [
+            "path",
+            "sensor_id"
+          ],
+          "msg": "Input should be a valid integer, unable to parse string as an integer",
+          "input": "abc"
+        }
+      ]
+    }
+
+14. Última medición
+  Solicitud: GET /sensores/1/ultima-medicion
+  Esperado : 200 (si hay mediciones)
+  Obtenido : HTTP 200
+  Respuesta:
+    {
+      "id": 118422,
+      "sensor_magnitud_id": 1,
+      "sensor_codigo": "AQ-001",
+      "magnitud": "co2",
+      "unidad": "ppm",
+      "valor": 1334.61,
+      "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+      "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+    }
+
+15. Últimas N mediciones (limit=3)
+  Solicitud: GET /sensores/1/mediciones?limit=3
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 118422,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1334.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118421,
+        "sensor_magnitud_id": 2,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "humidity",
+        "unidad": "%",
+        "valor": 53.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118420,
+        "sensor_magnitud_id": 3,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "temperature",
+        "unidad": "C",
+        "valor": 27.96,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      }
+    ]
+
+16. Filtro por magnitud
+  Solicitud: GET /sensores/1/mediciones?magnitud=co2
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 118422,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1334.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118416,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 730.88,
+        "timestamp_local": "2026-10-10 17:37:46 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:46 (UTC-05:00)"
+      },
+      {
+        "id": 118410,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1332.0,
+        "timestamp_local": "2026-10-10 17:37:41 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:41 (UTC-05:00)"
+      },
+      {
+        "id": 118401,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-00
+      ... (recortado)
+
+Extra: sensor inexistente
+  Solicitud: GET /sensores/999999
+  Esperado : 404
+  Obtenido : HTTP 404
+  Respuesta:
+    {
+      "detail": "No existe el sensor con id 999999"
+    }
+
+Extra: filtros combinados
+  Solicitud: GET /sensores/1/mediciones?magnitud=co2&desde=2026-01-01T00:00:00&hasta=2030-01-01T00:00:00&limit=10
+  Esperado : 200
+  Obtenido : HTTP 200
+  Respuesta:
+    [
+      {
+        "id": 118422,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1334.61,
+        "timestamp_local": "2026-10-10 17:37:51 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:51 (UTC-05:00)"
+      },
+      {
+        "id": 118416,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 730.88,
+        "timestamp_local": "2026-10-10 17:37:46 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:46 (UTC-05:00)"
+      },
+      {
+        "id": 118410,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-001",
+        "magnitud": "co2",
+        "unidad": "ppm",
+        "valor": 1332.0,
+        "timestamp_local": "2026-10-10 17:37:41 (UTC-05:00)",
+        "fecha_recepcion_local": "2026-10-10 17:37:41 (UTC-05:00)"
+      },
+      {
+        "id": 118401,
+        "sensor_magnitud_id": 1,
+        "sensor_codigo": "AQ-00
+      ... (recortado)
